@@ -1,0 +1,60 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+class Solution {
+  private:
+    void dfs(int node, vector<int> adj[], vector<int>& vis, vector<int>& list) {
+        vis[node] = 1;
+        list.push_back(node);
+        for (auto it : adj[node]) {
+            if (!vis[it]) {
+                dfs(it, adj, vis, list);
+            }
+        }
+    }
+
+  public:
+    vector<int> dfs(vector<vector<int>>& adj) {
+        int V = adj.size();
+        vector<int> vis(V, 0);
+        vector<int> list;
+        vector<int> adj_list[V];
+
+        for (int i = 0; i < V; i++) {
+            for (auto it : adj[i]) {
+                adj_list[i].push_back(it);
+            }
+        }
+
+        int start = 0;
+        dfs(start, adj_list, vis, list);
+        return list;
+    }
+};
+
+int main() {
+    int V, E;
+    cout << "Enter number of vertices and edges: ";
+    cin >> V >> E;
+
+    vector<vector<int>> adj(V);
+    cout << "Enter " << E << " edges (u v for undirected graph):" << endl;
+    for (int i = 0; i < E; i++) {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back(v);
+        adj[v].push_back(u); // remove if the graph is directed
+    }
+
+    Solution sol;
+    vector<int> result = sol.dfs(adj);
+
+    cout << "DFS Traversal starting from node 0:" << endl;
+    for (int x : result) {
+        cout << x << " ";
+    }
+    cout << endl;
+
+    return 0;
+}

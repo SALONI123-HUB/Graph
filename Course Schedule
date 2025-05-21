@@ -1,0 +1,49 @@
+class Solution {
+public:
+    bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
+        // Adjacency list to represent the graph
+        vector<int> adj[numCourses];
+
+        // Build the graph: prereq -> course
+        for (auto it : prerequisites) {
+            int course = it[0];
+            int prereq = it[1];
+            adj[prereq].push_back(course);  // course depends on prereq
+        }
+
+        // Array to store indegree (number of prerequisites) for each course
+        vector<int> indegree(numCourses, 0);
+        for (int i = 0; i < numCourses; i++) {
+            for (auto it : adj[i]) {
+                indegree[it]++;  // Increase indegree for dependent courses
+            }
+        }
+
+        // Queue to perform Kahn's Algorithm (BFS for Topological Sort)
+        queue<int> q;
+        for (int i = 0; i < numCourses; i++) {
+            if (indegree[i] == 0) {
+                q.push(i);  // Courses with no prerequisites
+            }
+        }
+
+        int count = 0;  // To count how many courses can be completed
+
+        while (!q.empty()) {
+            int node = q.front();
+            q.pop();
+            count++;  // This course can be completed
+
+            // Reduce the indegree of neighboring (dependent) courses
+            for (auto it : adj[node]) {
+                indegree[it]--;
+                if (indegree[it] == 0) {
+                    q.push(it);  // Now this course has no remaining prerequisites
+                }
+            }
+        }
+
+        // If we could complete all courses, return true
+        return count == numCourses;
+    }
+};
